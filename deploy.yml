@@ -1,19 +1,23 @@
----
-- name: Deploy website to webserver
-  hosts: web
+- name: Setup Apache and deploy website
+  hosts: webservers
   become: yes
-
   tasks:
+    - name: Update apt
+      apt:
+        update_cache: yes
     - name: Install Apache
       apt:
         name: apache2
         state: present
-        update_cache: yes
-
-    - name: Copy website files from Jenkins workspace
+    - name: Start Apache
+      service:
+        name: apache2
+        state: started
+        enabled: yes
+    - name: Copy website
       copy:
-        src: "{{ playbook_dir }}/../webfiles/"
-        dest: /var/www/html/
+        src: index.html
+        dest: /var/www/html/index.html
         owner: www-data
         group: www-data
-        mode: 0644
+        mode: '0644'  
